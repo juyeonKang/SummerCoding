@@ -20,6 +20,7 @@ def get_init():
         c = conn.cursor()
         c.execute("SELECT MAX(idx) FROM todo")
         idx = c.fetchall()[0][0]
+        idx = idx if idx else 0
         c.execute(ch_cmd)
         check = c.fetchall()[0][0]
         #print(idx)
@@ -77,11 +78,6 @@ def todo_dead():
     
     return source
 
-@route('/todo_add')
-def todo_add():
-    # /todo 에서 + 누르면 해당 페이지로 이동, todo 추가
-    return "hello"
-
 @route('/check', method='POST')
 def check():
     idx = int(request.body.read().decode().split("-")[0])
@@ -100,8 +96,10 @@ def add():
     data = request.body.read().decode().split(",")
     #print(data)
     idx = data[0]
-    title = data[1]
-    content = data[2]
+    title = data[1].replace("<script","&lt;script")
+    title = title.replace("<br>","&lt;br&gt;")
+    title = title.replace("</br>","&lt;/br&gt;")
+    content = data[2].replace("<script","&lt;script")
     duedate = data[3]
     ordernum = data[4]
     insert_cmd = "INSERT INTO todo VALUES (%s, '%s', '%s', 0, '%s', %s)"%(idx,title,content,duedate,ordernum)
@@ -122,6 +120,22 @@ def delete():
     with conn:
         c = conn.cursor()
         c.execute(del_cmd)
+        conn.commit()
+
+    return 0
+
+@route('/edit', method='POST')
+def edit():
+    data = request.body.read().decode().split(",")
+    idx = data[0]
+    title = data[1].replace("<script","&lt;script")
+    content = data[2].replace("<script","&lt;script")
+    edit_cmd = "UPDATE todo SET title='%s', content='%s' WHERE idx=%s"%(title, content, idx)
+
+    conn = sqlite3.connect("testDB.db")
+    with conn:
+        c = conn.cursor()
+        c.execute(edit_cmd)
         conn.commit()
 
     return 0
