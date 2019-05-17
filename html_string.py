@@ -104,7 +104,7 @@ def todo_top():
 		right:13px;
 	}
 	.todo > .del{
-		background:url(images/del.png) no-repeat;
+		background:url("/static/images/del.png") no-repeat;
 		position:absolute;
 		border:none;
 		background-size:18px;
@@ -157,7 +157,7 @@ def todo_top():
 	.edit{
 		position:absolute;
 		right:75px;
-		background:url("images/edit.png") no-repeat;
+		background:url("/static/images/edit.png") no-repeat;
 		background-size:30px;
 		border:none;
 		width:30px;
@@ -165,8 +165,7 @@ def todo_top():
 		cursor:pointer;
 	}
 	.noti{
-		/*display:none; //notification도 이벤트처리*/
-		background:url(images/notification.png) no-repeat;
+		background:url("/static/images/notification.png") no-repeat;
 		position:absolute;
 		border:none;
 		background-size:320px;
@@ -182,14 +181,14 @@ def todo_top():
 		left:6px;
 		top:8px;
 		display:inline-block;
-		background:url("images/unchecked.png") no-repeat;
+		background:url("/static/images/unchecked.png") no-repeat;
 		background-size:30px;
 		width:30px;
 		height:30px;
 		cursor:pointer;
 	}
 	input[id^="ch"]:checked + label{
-		background:url("images/checked.png") no-repeat;
+		background:url("/static/images/checked.png") no-repeat;
 		background-size:30px;
 		width:30px;
 		height:30px;
@@ -213,21 +212,20 @@ def todo_top():
                         //alert(data.idx);
 			gbl_idx=data.idx;
 			noti_check = data.noti;
+			if(noti_check=="0"){
+                            $(".noti").css("display","none");
+                            //$(function(){alert(noti_check);});
+                            }
 		}
 	});
-	$(function(){
-                if(noti_check == "0"){
-                        $(".noti").css("display","none");
-                }
-        });
-	
-	$(document).ready(function(){
+    	$(document).ready(function(){
 		var Now = new Date();
 		var today = Now.getFullYear();
 		today += "-"+("00"+(Now.getMonth()+1)).slice(-2);
 		today += "-"+Now.getDate();
         	//alert(typeof($("#duedate").attr("id")));
 		//$("#duedate").attr("min",today);
+                
 		$(".title").click(function(){
 			//del 누르면 바로 삭제가 가능하면(변화 보이지 않고)
 			//var todo_id = $(this)attr("id")
@@ -303,7 +301,7 @@ def todo_top():
 
 <div class="wrap">
 	<a href="/todo">
-		<img src="images/todolist.png" width="340" alt="to do list">
+		<img src="/static/images/todolist.png" width="340" alt="to do list">
 	</a>
 	<button class="noti"></button>
 	<div>	
