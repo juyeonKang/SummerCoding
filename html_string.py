@@ -216,11 +216,10 @@ def todo_top():
 		}
 	});
 	$(function(){
-                if(noti_check == 0){
+                if(noti_check == "0"){
                         $(".noti").css("display","none");
                 }
-        })
-	
+        });
 	
 	$(document).ready(function(){
 		var Now = new Date();
@@ -254,21 +253,27 @@ def todo_top():
 			}
 		});
 		$(".submit").click(function(){
-                        $("#add").toggle();
-			gbl_idx += 1;
-			var title = $('input[name=title]').val();
-			var content = $('input[name=content]').val();
-			var duedate = $('input[name=duedate]').val();
-			var d = gbl_idx+","+title+","+content+","+duedate+",-1"
-			$.ajax({
-				url:"/add",
-				type:"POST",
-				data:d,
-				//success:function(){alert("success");}
-			});
-			$('input[name=title]').val('');
-			$('input[name=content]').val('');
-			$('input[name=duedate]').val('');
+                        if($('input[name=title]').val()=="" || $('input[name=content]').val()==""){
+                                $(function(){
+                                        alert("title과 content를 모두 입력하세요");
+                                });
+                        } else{
+                                $("#add").toggle();
+                		gbl_idx += 1;
+                        	var title = $('input[name=title]').val();
+                        	var content = $('input[name=content]').val();
+                                var duedate = $('input[name=duedate]').val();
+                		var d = gbl_idx+","+title+","+content+","+duedate+",-1"
+                        	$.ajax({
+                                	url:"/add",
+                                	type:"POST",
+                        		data:d,
+                                	//success:function(){alert("success");}
+                        	});
+        			$('input[name=title]').val('');
+                		$('input[name=content]').val('');
+                        	$('input[name=duedate]').val('');
+                        }
 		})
 		$(".del").click(function(){
                         var todo_id = $(this).parent().attr("id")
