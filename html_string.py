@@ -197,19 +197,31 @@ def todo_top():
 
 	
 </style>
+
+
 <script src="//code.jquery.com/jquery-1.10.2.js"></script>
 <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 <script src="http://code.jquery.com/jquery-latest.js"></script>	
+
 <script>
 	var gbl_idx;
+	var noti_check;
 	$.ajax({
-		url:"/get_idx",
+		url:"/get_init",
 		dataType : "json",
 		success:function(data){
                         //alert(data.idx);
 			gbl_idx=data.idx;
+			noti_check = data.noti;
 		}
 	});
+	$(function(){
+                if(noti_check == 0){
+                        $(".noti").css("display","none");
+                }
+        })
+	
+	
 	$(document).ready(function(){
 		var Now = new Date();
 		var today = Now.getFullYear();
@@ -265,6 +277,7 @@ def todo_top():
                                 type:"POST",
                                 data:todo_id,
                         });
+                        $("#"+todo_id).css("display","none");
                 });
 
 	});
@@ -289,6 +302,7 @@ def todo_top():
 			<button class="submit"> ADD </button>
 		</div>
 	</div>
+	<div id="sortable">
 
 	'''
     return result
@@ -322,6 +336,7 @@ def new_todo(data):
 
 def todo_bottom():
     result = '''
+        </div>
 	<br>
 </div>
 
