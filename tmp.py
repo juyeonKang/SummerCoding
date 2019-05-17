@@ -4,16 +4,23 @@ from bottle import run, route, request, post
 import sqlite3
 import datetime
 
-@route('/get_idx')
-def get_idx():
+@route('/get_init')
+def get_init():
+    # 현재 날짜 확인
+    now = datetime.datetime.now()
+    nowDate = now.strftime("%Y-%m-%d")
+    ch_cmd = "SELECT EXISTS (SELECT * FROMT todo WHERE duedate < '%s');"%nowDate
+
     conn = sqlite3.connect("testDB.db")
     with conn:
         c = conn.cursor()
         c.execute("SELECT MAX(idx) FROM todo")
         idx = c.fetchall()[0][0]
-        print(idx)
+        c.execute(ch_cmd)
+        check = c.fetchall()[0][0]
+        #print(idx)
         
-    return {"idx":idx}
+    return {"idx":idx, "noti":check}
 
 @route('/todo')
 def todo():
