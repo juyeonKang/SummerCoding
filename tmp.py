@@ -1,15 +1,19 @@
 import html_string as html
 import bottle
-from bottle import run, route, request, post
+from bottle import run, route, request, post, static_file
 import sqlite3
 import datetime
+
+@route('/static/<filepath:path>')
+def server_static(filepath):
+    return static_file(filepath,root="./") 
 
 @route('/get_init')
 def get_init():
     # 현재 날짜 확인
     now = datetime.datetime.now()
     nowDate = now.strftime("%Y-%m-%d")
-    ch_cmd = "SELECT EXISTS (SELECT * FROM todo WHERE duedate < '%s');"%nowDate
+    ch_cmd = "SELECT EXISTS (SELECT * FROM todo WHERE duedate < '%s' AND duedate !='');"%nowDate
 
     conn = sqlite3.connect("testDB.db")
     with conn:
