@@ -4,8 +4,19 @@ from bottle import run, route, request, post
 import sqlite3
 import datetime
 
+@route('/get_idx')
+def get_idx():
+    conn = sqlite3.connect("testDB.db")
+    with conn:
+        c = conn.cursor()
+        c.execute("SELECT MAX(idx) FROM todo")
+        idx = c.fetchall()[0][0]
+        print(idx)
+        
+    return {"idx":idx}
+
 @route('/todo')
-def index():
+def todo():
     # html source code 틀
     str_top = html.todo_top()
     str_bottom = html.todo_bottom()
@@ -26,7 +37,7 @@ def index():
     return source
 
 @route('/todo_dead')
-def index():
+def todo_dead():
     # /todo 에서 deadline 알람을 누르면 해당 페이지로 이동,
     # duedate 비교해서 초과한 것 출력,
     # dead는 check 누르면 display none으로 변경
@@ -55,12 +66,12 @@ def index():
     return source
 
 @route('/todo_add')
-def index():
+def todo_add():
     # /todo 에서 + 누르면 해당 페이지로 이동, todo 추가
     return "hello"
 
 @route('/check', method='POST')
-def index():
+def check():
     idx = int(request.body.read().decode().split("-")[0])
     update_cmd = "UPDATE todo SET done=CASE WHEN done=1 THEN 0 ELSE 1 END WHERE idx=%d"%idx
 
@@ -70,6 +81,25 @@ def index():
         c.execute(update_cmd)
         conn.commit()
         
+    return 0
+
+@route('/add', method="POST")
+def add():   
+    data = request.body.read().decode().split(",")
+    print(data)
+    idx = data[0]
+    title = data[1]
+    content = data[2]
+    duedate = data[3]
+    ordernum = data[4]
+    insert_cmd = "INSERT INTO todo VALUES (%s, '%s', '%s', 0, '%s', %s)"%(idx,title,content,duedate,ordernum)
+
+    conn = sqlite3.connect("testDB.db")
+    with conn:
+       c = conn.cursor()
+       c.execute(insert_cmd)
+       conn.commit()
+       
     return 0
 
 run(reloader=True, host='0.0.0.0', port = 8080)
