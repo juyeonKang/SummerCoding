@@ -226,8 +226,8 @@ def todo_top():
 		var today = Now.getFullYear();
 		today += "-"+("00"+(Now.getMonth()+1)).slice(-2);
 		today += "-"+Now.getDate();
-	//alert(typeof($("#duedate").attr("id")));
-		$("#duedate").attr("min",today);
+        	//alert(typeof($("#duedate").attr("id")));
+		//$("#duedate").attr("min",today);
 		$(".title").click(function(){
 			//del 누르면 바로 삭제가 가능하면(변화 보이지 않고)
 			//var todo_id = $(this)attr("id")
@@ -237,6 +237,11 @@ def todo_top():
 		});
 		$(".add").click(function(){
 			$("#add").toggle();
+		});
+		$('input[name=duedate]').click(function(){
+                        $(this).attr("type","date");
+                        //$(this).attr("id","duedate");
+                        $(this).attr("min",today);
 		});
 		$("input").click(function(){
 			if($(this).attr("type")=="checkbox"){
@@ -303,7 +308,9 @@ def todo_top():
 		<div id="add">
 			<input type="text" name="title" placeholder="to do title"><br>
 			<input type="text" name="content" placeholder="to do content"><br>
-			<input type="date" id="duedate" name="duedate" min="2019-05-17"><br>
+			<input type="text" name="duedate" placeholder="duedate (optional)"><br>
+			<!--
+			<input type="date" id="duedate" name="duedate" min="2019-05-17"><br>-->
 			<button class="submit"> ADD </button>
 		</div>
 	</div>
