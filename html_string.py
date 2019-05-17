@@ -265,9 +265,9 @@ def todo_top():
                         } else{
                                 $("#add").toggle();
                 		gbl_idx += 1;
-                        	var title = $('input[name=title]').val();
-                        	var content = $('input[name=content]').val();
-                                var duedate = $('input[name=duedate]').val();
+                        	var title = $("input[name=title]").val();
+                        	var content = $("input[name=content]").val();
+                                var duedate = $("input[name=duedate]").val();
                 		var d = gbl_idx+","+title+","+content+","+duedate+",-1"
                         	$.ajax({
                                 	url:"/add",
@@ -275,9 +275,12 @@ def todo_top():
                         		data:d,
                                 	//success:function(){alert("success");}
                         	});
-        			$('input[name=title]').val('');
-                		$('input[name=content]').val('');
-                        	$('input[name=duedate]').val('');
+        			$("input[name=title]").val("");
+                		$("input[name=content]").val("");
+                		$("input[name=duedate]").val("");
+                        	$("input[name=duedate]").attr("type","text");
+                        	$("input[name=duedate]").attr("placeholder","duedate (optional)");
+                        	location.reload();
                         }
 		})
 		$(".del").click(function(){
