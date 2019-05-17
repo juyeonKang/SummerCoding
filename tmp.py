@@ -1,6 +1,6 @@
 import html_string as html
 import bottle
-from bottle import run, route
+from bottle import run, route, request, post
 import sqlite3
 import datetime
 
@@ -58,5 +58,18 @@ def index():
 def index():
     # /todo 에서 + 누르면 해당 페이지로 이동, todo 추가
     return "hello"
+
+@route('/check', method='POST')
+def index():
+    idx = int(request.body.read().decode().split("-")[0])
+    update_cmd = "UPDATE todo SET done=CASE WHEN done=1 THEN 0 ELSE 1 END WHERE idx=%d"%idx
+
+    conn = sqlite3.connect("testDB.db")
+    with conn:
+        c = conn.cursor()
+        c.execute(update_cmd)
+        conn.commit()
+        
+    return 0
 
 run(reloader=True, host='0.0.0.0', port = 8080)
