@@ -237,7 +237,7 @@ def todo_top():
 		$(".add").click(function(){
 			$("#add").toggle();
 		});
-		$('input[name=duedate]').click(function(){
+		$('input[name=duedate]').focus(function(){
                         $(this).attr("type","date");
                         //$(this).attr("id","duedate");
                         $(this).attr("min",today);
