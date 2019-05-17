@@ -86,7 +86,7 @@ def check():
 @route('/add', method="POST")
 def add():   
     data = request.body.read().decode().split(",")
-    print(data)
+    #print(data)
     idx = data[0]
     title = data[1]
     content = data[2]
@@ -100,6 +100,18 @@ def add():
        c.execute(insert_cmd)
        conn.commit()
        
+    return 0
+
+@route('/delete', method='POST')
+def delete():
+    data = request.body.read().decode()
+    del_cmd = "DELETE FROM todo WHERE idx = %s"%data
+    conn = sqlite3.connect("testDB.db")
+    with conn:
+        c = conn.cursor()
+        c.execute(del_cmd)
+        conn.commit()
+
     return 0
 
 run(reloader=True, host='0.0.0.0', port = 8080)
