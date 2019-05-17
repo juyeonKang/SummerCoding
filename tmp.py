@@ -13,7 +13,7 @@ def get_init():
     # 현재 날짜 확인
     now = datetime.datetime.now()
     nowDate = now.strftime("%Y-%m-%d")
-    ch_cmd = "SELECT EXISTS (SELECT * FROM todo WHERE duedate < '%s' AND duedate !='');"%nowDate
+    ch_cmd = "SELECT EXISTS (SELECT * FROM todo WHERE duedate < '%s' AND duedate !='' AND done=0);"%nowDate
 
     conn = sqlite3.connect("testDB.db")
     with conn:
@@ -38,7 +38,7 @@ def todo():
     conn = sqlite3.connect("testDB.db")
     with conn:
         c = conn.cursor()
-        c.execute("SELECT * FROM todo ORDER BY done ASC, ordernum ASC, duedate ASC")
+        c.execute("SELECT * FROM todo ORDER BY done ASC, ordernum ASC, duedate='' ASC, duedate ASC")
         rows = c.fetchall()
         for data in rows:
             str_todos += html.new_todo(data)
@@ -63,7 +63,7 @@ def todo_dead():
     nowDate = now.strftime("%Y-%m-%d")
 
     # SELECT문장 생성
-    select_cmd = "SELECT * FROM todo WHERE done==0 AND duedate < '%s' ORDER BY duedate ASC"%nowDate
+    select_cmd = "SELECT * FROM todo WHERE done==0 AND duedate < '%s' AND duedate !='' ORDER BY duedate ASC"%nowDate
         
     conn = sqlite3.connect("testDB.db")
     with conn:
