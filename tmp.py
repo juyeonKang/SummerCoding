@@ -9,7 +9,7 @@ def get_init():
     # 현재 날짜 확인
     now = datetime.datetime.now()
     nowDate = now.strftime("%Y-%m-%d")
-    ch_cmd = "SELECT EXISTS (SELECT * FROMT todo WHERE duedate < '%s');"%nowDate
+    ch_cmd = "SELECT EXISTS (SELECT * FROM todo WHERE duedate < '%s');"%nowDate
 
     conn = sqlite3.connect("testDB.db")
     with conn:
@@ -19,6 +19,7 @@ def get_init():
         c.execute(ch_cmd)
         check = c.fetchall()[0][0]
         #print(idx)
+        #print(check)
         
     return {"idx":idx, "noti":check}
 
