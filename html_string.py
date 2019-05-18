@@ -198,14 +198,14 @@ def todo_top():
 	
 </style>
 
-
-<script src="//code.jquery.com/jquery-1.10.2.js"></script>
-<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-<script src="http://code.jquery.com/jquery-latest.js"></script>	
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
 <script>
 	var gbl_idx;
 	var noti_check;
+	todo_id=0;
 	$.ajax({
 		url:"/get_init",
 		dataType : "json",
@@ -219,6 +219,30 @@ def todo_top():
                             }
 		}
 	});
+  $(function(){
+    $("#todo_edit").dialog({
+      autoOpen:false,
+      modal: true,
+      buttons: {
+        Ok: function() {
+            var title = $("input[name=edit_title]").val();
+            var content = $("input[name=edit_content]").val();
+            var d = todo_id+","+title+","+content;
+            //alert(d);
+            $.ajax({
+                url:"/edit",
+                type:"POST",
+                data: d
+            });
+            $(this).dialog("close");
+            var timer = setTimeout(function() {
+                location.reload();
+                clearTimeout(timer);},1000);  
+          }
+          }
+    });
+  } );
+	  
     	$(document).ready(function(){
 		var Now = new Date();
 		var today = Now.getFullYear();
@@ -244,7 +268,7 @@ def todo_top():
 		});
 		$("input").click(function(){
 			if($(this).attr("type")=="checkbox"){
-			var todo_id = $(this).parent().attr("id")
+			todo_id = $(this).parent().attr("id")
 			if($(this).parent().hasClass("dead")==true){
 				$("#"+todo_id).css("display","none");
 			}
@@ -285,7 +309,7 @@ def todo_top():
                         }
 		})
 		$(".del").click(function(){
-                        var todo_id = $(this).parent().attr("id")
+                        todo_id = $(this).parent().attr("id")
                         $.ajax({
                                 url:"/delete",
                                 type:"POST",
@@ -294,6 +318,41 @@ def todo_top():
                         $("#"+todo_id).css("display","none");
                 });
 
+                $(".edit").click(function(){
+                        todo_id = $(this).parent().attr("id").substring(4);
+                        $("input[name=edit_title]").val($("#"+todo_id+" > .title").html());
+                        $("input[name=edit_content]").val($.trim($("#show"+todo_id).text()));
+                        //alert(todo_id);
+                        //alert($("#"+todo_id+" > .title").html());
+                        //alert($.trim($("#show"+todo_id).text()));
+                        $("#todo_edit").dialog("open");
+                }); 
+                
+                /*
+                $(".edit").click(function(){
+                        var todo_id = $(this).parent().attr("id").substring(4);
+                        $("input[name=edit_title]").val($("#"+todo_id+" > .title").html());
+                        $("input[name=edit_content]").val($.trim($("#show"+todo_id).text()));
+                        alert("todo_id);
+                        var title, content, d;
+                        $(function(){
+                                $("#todo_edit").dialog({
+                                        modal:true,
+                                        button:{ done: function(){
+                                                title = $("input[name=edit_title]").val()
+                                                content = $("input[name=edit_content]").val()
+                                                d = todo_id+","+title+","+content
+                                                $.ajax({
+                                                    url:"/edit",
+                                                    type:"POST",
+                                                    data: d
+                                                    })
+                                                }
+                                        }
+				});
+                        });
+		});*/
+
 	});
 
 	
@@ -301,8 +360,12 @@ def todo_top():
 </head>
 
 <body>
-
 <div class="wrap">
+            <div id="todo_edit" title="to do edit">
+                    <input type="text" name="edit_title" >
+                    <input type="text" name="edit_content">
+            </div>
+
 	<a href="/todo">
 		<img src="/static/images/todolist.png" width="340" alt="to do list">
 	</a>
@@ -343,7 +406,7 @@ def new_todo(data):
 		<div class="del"></div>
 	</div>
 	<div id="show%d" class="content">
-                %s<button class="edit"></button><br><br>
+                <button class="edit"></button>%s<br><br>
 	</div>
 	'''%(idx, idx,idx,title, duedate, idx, content)
 
