@@ -140,4 +140,24 @@ def edit():
 
     return 0
 
+@route('/order', method='POST')
+def order():
+    data = request.body.read().decode().split("&")
+    order_cmd=[]
+    #print(data)
+
+    for i in range(len(data)):
+        data[i] = data[i].replace("data%5B%5D=todo","")
+        order_cmd.append("UPDATE todo SET ordernum=%d WHERE idx=%s"%(i, data[i]))
+
+    conn = sqlite3.connect("testDB.db")
+    with conn:
+        c = conn.cursor()
+        for cmd in order_cmd:
+            c.execute(cmd)
+        conn.commit()
+                    
+    return 0
+
+
 run(reloader=True, host='0.0.0.0', port = 8080)
