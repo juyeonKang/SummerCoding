@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import html_string as html
 import bottle
 from bottle import run, route, request, post, static_file

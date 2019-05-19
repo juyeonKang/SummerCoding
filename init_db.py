@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import sys, os, sqlite3
 
 if not os.path.isfile("./testDB.db"):
