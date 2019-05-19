@@ -114,6 +114,13 @@ def todo_top():
 		right:-30px;
 		cursor:pointer;
 	}
+	.todo > img{
+                width:25px;
+                cursor:pointer;
+                position:absolute;
+                top:10px;
+                left:-40px;
+	}
 
 	.dead{
 		background:#FFC000;
@@ -130,6 +137,9 @@ def todo_top():
 	}
 	.done > .duedate{
 		color:#D9D9D9;
+	}
+	.done > img{
+                display:none;
 	}
 	.content{
 		display:none;
@@ -206,6 +216,7 @@ def todo_top():
 	var gbl_idx;
 	var noti_check;
 	todo_id=0;
+	order_result = [];
 	$.ajax({
 		url:"/get_init",
 		dataType : "json",
@@ -219,30 +230,41 @@ def todo_top():
                             }
 		}
 	});
-  $(function(){
-    $("#todo_edit").dialog({
-      autoOpen:false,
-      modal: true,
-      buttons: {
-        Ok: function() {
-            var title = $("input[name=edit_title]").val();
-            var content = $("input[name=edit_content]").val();
-            var d = todo_id+","+title+","+content;
-            //alert(d);
-            $.ajax({
-                url:"/edit",
-                type:"POST",
-                data: d
-            });
-            $(this).dialog("close");
-            var timer = setTimeout(function() {
-                location.reload();
-                clearTimeout(timer);},1000);  
-          }
-          }
-    });
-  } );
-	  
+	
+	$(function(){
+                $("#todo_edit").dialog({
+                autoOpen:false,
+                modal: true,
+                buttons: {
+                        Ok: function() {
+                                var title = $("input[name=edit_title]").val();
+                                var content = $("input[name=edit_content]").val();
+                                var d = todo_id+","+title+","+content;
+                                //alert(d);
+                                $.ajax({
+                                        url:"/edit",
+                                        type:"POST",
+                                        data: d
+                                });
+                                $(this).dialog("close");
+                                var timer = setTimeout(function() {
+                                        location.reload();
+                                        clearTimeout(timer);},1000);
+                                }
+                        }
+                });
+        } );
+
+        $(function(){
+                $("#sortable").sortable({
+                        items:"dl:not(.no_sort)",
+                        handle: ".handle"
+                });
+                $("#sortable").disableSelection();
+                //order_result = $("#sortable").sortable("toArray");
+                //alert(order_result);
+        });
+
     	$(document).ready(function(){
 		var Now = new Date();
 		var today = Now.getFullYear();
@@ -268,16 +290,18 @@ def todo_top():
 		});
 		$("input").click(function(){
 			if($(this).attr("type")=="checkbox"){
-			todo_id = $(this).parent().attr("id")
-			if($(this).parent().hasClass("dead")==true){
-				$("#"+todo_id).css("display","none");
-			}
-			$("#"+todo_id).toggleClass("done");
-			$.ajax({
-				url:"/check",
-				type:"POST",
-				data:todo_id+"-check"
-			});
+                                todo_id = $(this).parent().attr("id");
+                                $(this).parent().parent().toggleClass("no_sort");
+                                if($(this).parent().hasClass("dead")==true){
+                                        $("#"+todo_id).css("display","none");
+                                        //$("#
+                                }
+                                $("#"+todo_id).toggleClass("done");
+                                $.ajax({
+                                        url:"/check",
+                                        type:"POST",
+                                        data:todo_id+"-check"
+                                });
 			}
 		});
 		$(".submit").click(function(){
@@ -327,32 +351,13 @@ def todo_top():
                         //alert($.trim($("#show"+todo_id).text()));
                         $("#todo_edit").dialog("open");
                 }); 
-                
-                /*
-                $(".edit").click(function(){
-                        var todo_id = $(this).parent().attr("id").substring(4);
-                        $("input[name=edit_title]").val($("#"+todo_id+" > .title").html());
-                        $("input[name=edit_content]").val($.trim($("#show"+todo_id).text()));
-                        alert("todo_id);
-                        var title, content, d;
-                        $(function(){
-                                $("#todo_edit").dialog({
-                                        modal:true,
-                                        button:{ done: function(){
-                                                title = $("input[name=edit_title]").val()
-                                                content = $("input[name=edit_content]").val()
-                                                d = todo_id+","+title+","+content
-                                                $.ajax({
-                                                    url:"/edit",
-                                                    type:"POST",
-                                                    data: d
-                                                    })
-                                                }
-                                        }
-				});
-                        });
-		});*/
 
+	});
+
+	$(window).unload(function(){
+                order_result = $("#sortable").sortable("toArray")
+                console.log(order_result);
+                
 	});
 
 	
@@ -398,9 +403,11 @@ def new_todo(data):
     duedate = data[4]
     
     result = '''
+        <dl id="todo%d" class="sort">
 	<div id="%d" class="todo before">
 		<input type="checkbox" id="ch%d">
 		<label for="ch%d"></label>
+		<img src="/static/images/updown.png" alt="ordering arrow" class="handle">
 		<div class="title"> %s</div>
 		<div class="duedate">%s 마감</div>
 		<div class="del"></div>
@@ -408,11 +415,13 @@ def new_todo(data):
 	<div id="show%d" class="content">
                 <button class="edit"></button>%s<br><br>
 	</div>
-	'''%(idx, idx,idx,title, duedate, idx, content)
+	</dl>
+	'''%(idx, idx, idx,idx,title, duedate, idx, content)
 
     if done:
         result = result.replace("todo before", "todo before done")
         result = result.replace('type="checkbox"','type="checkbox" checked=true')
+        result = result.replace('class="sort"','class="no_sort"')
 
     if duedate=='':
         result = result.replace("마감","")
