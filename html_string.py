@@ -116,7 +116,7 @@ def todo_top():
 	}
 	.todo > img{
                 width:25px;
-                cursor:pointer;
+                cursor:move;
                 position:absolute;
                 top:10px;
                 left:-40px;
@@ -216,7 +216,6 @@ def todo_top():
 	var gbl_idx;
 	var noti_check;
 	todo_id=0;
-	order_result = [];
 	$.ajax({
 		url:"/get_init",
 		dataType : "json",
@@ -258,7 +257,16 @@ def todo_top():
         $(function(){
                 $("#sortable").sortable({
                         items:"dl:not(.no_sort)",
-                        handle: ".handle"
+                        handle: ".handle",
+                        update:function(event, ui){
+                                var d = {"data":$("#sortable").sortable("toArray")};
+                                $.ajax({
+                                        url:"/order",
+                                        type:"POST",
+                                        data:d,
+                                //success:function(){alert("success");}
+                        });
+                        }
                 });
                 $("#sortable").disableSelection();
                 //order_result = $("#sortable").sortable("toArray");
@@ -352,12 +360,6 @@ def todo_top():
                         $("#todo_edit").dialog("open");
                 }); 
 
-	});
-
-	$(window).unload(function(){
-                order_result = $("#sortable").sortable("toArray")
-                console.log(order_result);
-                
 	});
 
 	
